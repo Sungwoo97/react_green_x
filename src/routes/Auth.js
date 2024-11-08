@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword  } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup  } from "firebase/auth";
 
 const Auth = ()=>{
   const [ email, setEmail ] = useState('');
@@ -62,6 +62,24 @@ const Auth = ()=>{
   const toggleAccount = ()=>{
     setNewAccount(prev=>!prev);
   }
+  const onGoogleSignIn = ()=>{
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+    .then((result) => {
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      const user = result.user;
+      console.log(token, user);
+    }).catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      const email = error.customData.email;
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      console.log(email, credential);
+      setError(errorMessage);
+    });
+  }
+  
   return(
     <div className="container">
       <h1>{newAccount ? 'Account' : 'Login' } Form</h1>
@@ -75,10 +93,16 @@ const Auth = ()=>{
           <Form.Control type="password" name="password" onChange={onChange} />
         </Form.Group>
         <Button type="submit" variant="primary">{newAccount ? 'Account' : 'Login' }</Button>
-        <div className="mt-3">{error}</div>
       </Form>
       <hr/>
-      <Button  variant="secondary" onClick={toggleAccount}>{newAccount ? '로그인으로 전환' : '회원가입으로 전환' }</Button>
+        {newAccount ? (
+          <Button variant="info" onClick={onGoogleSignIn} >Google Login</Button>
+        ) : (
+          <Button variant="info" onClick={onGoogleSignIn} >Google Login</Button>
+        ) }
+      <div className="mt-3">{error}</div>
+      <hr/>
+      <Button  variant="secondary" onClick={toggleAccount}>{newAccount ? 'Change Login' : 'Change Account' }</Button>
     </div>
   )
 }
