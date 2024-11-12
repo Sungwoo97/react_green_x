@@ -8,7 +8,6 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [init, setInit] = useState(false); //로그인 확인 시작 여부
   const [userObj, setUserObj] = useState(null);
-
   useEffect(()=>{
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
@@ -16,6 +15,7 @@ function App() {
         //유저정보가 있다면
         setIsLoggedIn(true);
         setUserObj(user.uid);
+        console.log(user);
       } else {
         setIsLoggedIn(false);
       }
